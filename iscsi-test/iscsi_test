@@ -1,0 +1,18 @@
+#!/bin/sh
+
+sync
+
+/etc/init.d/iscsid stop
+rmmod iscsi_tcp be2iscsi iscsi_boot_sysfs cxgb4i cxgb3i bnx2i libcxgbi ib_iser libiscsi_tcp libiscsi scsi_transport_iscsi sd_mod 2>/dev/null
+/etc/init.d/iscsid start
+
+iscsiadm -m discovery -t sendtargets -p 10.10.10.5:3260
+iscsiadm -m node --login
+sleep 15
+raw /dev/raw/raw1 /dev/sda
+sg_dd if=/dev/zero of=/dev/raw/raw1 time=1 oflag=direct count=1000
+
+sync
+
+raw /dev/raw/raw1 0 0
+iscsiadm -m node --logout

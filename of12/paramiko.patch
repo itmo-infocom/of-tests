@@ -1,0 +1,20 @@
+diff -ur /usr/share/pyshared/paramiko/transport.py.orig /usr/share/pyshared/paramiko/transport.py
+--- /usr/share/pyshared/paramiko/transport.py.orig       2013-03-14 15:25:10.139675414 -0300
++++ /usr/share/pyshared/paramiko/transport.py   2013-03-14 15:25:34.647678442 -0300
+@@ -48,6 +48,8 @@
+ from Crypto import Random
+ from Crypto.Cipher import Blowfish, AES, DES3, ARC4
+ from Crypto.Hash import SHA, MD5
++from Crypto.Random import atfork
++
+ try:
+     from Crypto.Util import Counter
+ except ImportError:
+@@ -1504,6 +1506,7 @@
+         # of a private method, threading.Thread will keep a reference to it
+         # indefinitely, creating a GC cycle and not letting Transport ever be
+         # GC'd. it's a bug in Thread.)
++        atfork()
+ 
+         # active=True occurs before the thread is launched, to avoid a race
+         _active_threads.append(self)

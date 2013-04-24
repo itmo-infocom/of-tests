@@ -1,0 +1,12 @@
+#!/bin/sh
+
+TESTS=`grep QoS t1 | wc -l`
+for i in `seq 1 $TESTS`
+do
+ grep QoS t1 | head -$i | tail -1
+ for f in *
+ do
+  grep "time to transfer data:" $f | head -$i | tail -1
+ done
+done
+
