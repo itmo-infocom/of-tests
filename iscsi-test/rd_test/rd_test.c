@@ -29,8 +29,7 @@ struct thread_info {    /* Used as argument to thread_start() */
     int       size;             /* Size of data for transfer in bytes */
 };
 
-#define INQ_REPLY_LEN 96        /* logic assumes >= sizeof(inqCmdBlk) */
-#define INQ_CMD_LEN 6
+#define TUR_CMD_LEN 6
 
 /* Thread start function: read testing */
 
@@ -38,12 +37,12 @@ static void *
 thread_start(void *arg)
 {
     struct thread_info *tinfo = (struct thread_info *) arg;
+    char *buf;
     int f;
-    long int *cnt;
+    unsigned int *cnt;
     time_t secs;
-    unsigned char inqCmdBlk [INQ_CMD_LEN] =
-                                {0x12, 0, 0, 0, INQ_REPLY_LEN, 0};
-    unsigned char inqBuff[INQ_REPLY_LEN];
+    unsigned char turCmdBlk [TUR_CMD_LEN] =
+                                {0x00, 0, 0, 0, 0, 0};
     sg_io_hdr_t io_hdr;
     unsigned char sense_buffer[32];
 
@@ -61,25 +60,20 @@ thread_start(void *arg)
 
     secs = time(NULL) + tinfo->time;
 
-    /* Prepare INQUIRY command */
+    /* Prepare TEST UNIT READY command */
     memset(&io_hdr, 0, sizeof(sg_io_hdr_t));
     io_hdr.interface_id = 'S';
-    io_hdr.cmd_len = sizeof(inqCmdBlk);
-    /* io_hdr.iovec_count = 0; */  /* memset takes care of this */
+    io_hdr.cmd_len = sizeof(turCmdBlk);
     io_hdr.mx_sb_len = sizeof(sense_buffer);
-    io_hdr.dxfer_direction = SG_DXFER_FROM_DEV;
-    io_hdr.dxfer_len = INQ_REPLY_LEN;
-    io_hdr.dxferp = inqBuff;
-    io_hdr.cmdp = inqCmdBlk;
+    io_hdr.dxfer_direction = SG_DXFER_NONE;
+    io_hdr.cmdp = turCmdBlk;
     io_hdr.sbp = sense_buffer;
     io_hdr.timeout = 20000;     /* 20000 millisecs == 20 seconds */
-    /* io_hdr.flags = 0; */     /* take defaults: indirect IO, etc */
-    /* io_hdr.pack_id = 0; */
-    /* io_hdr.usr_ptr = NULL; */
+
 
     while(time(NULL) <= secs) {
         if (ioctl(f, SG_IO, &io_hdr) < 0) {
-            perror("sg_simple2: Inquiry SG_IO ioctl error");
+            perror("rd_test: Inquiry SG_IO ioctl error");
             close(f);
         return cnt;
         }
@@ -104,7 +98,7 @@ main(int argc, char *argv[])
     struct thread_info *tinfo;
     void *res;
     FILE *p;
-    long int cnt=0;
+    unsigned int cnt;
     time_t time;
 
     if(argc == 1) usage(argv[0]);
@@ -151,6 +145,7 @@ main(int argc, char *argv[])
 
     /* Now join with each thread, and display its returned value */
 
+    cnt = 0;
     for (tnum = 0; tnum < num_threads; tnum++) {
         s = pthread_join(tinfo[tnum].thread_id, &res);
         if (s != 0)
