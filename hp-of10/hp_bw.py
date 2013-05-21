@@ -34,7 +34,7 @@ def sw_rd(chan):
         except socket.timeout:
             pass
 
-    return x
+    return out
 
 def set_bw(chan, port=20, bw='50 50 0 0 0 0 0 0'):
     import types
