@@ -1,0 +1,18 @@
+#!/bin/sh
+
+if [ $# -lt 3 ]
+then
+	echo "Usage: $0 host packages size..."
+	exit
+fi
+
+iscsiadm -m discovery -t st -p 10.10.10.5:3260
+iscsiadm -m node --login
+raw /dev/raw/raw1 /dev/sdb
+echo 1 > /proc/scsi/sg/allow_dio
+
+host=$1
+pkgs=$2
+shift 2
+
+./rtt_iscsi_read.py $host $pkgs $*
