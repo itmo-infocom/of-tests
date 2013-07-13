@@ -14,13 +14,17 @@ MACS=100
 rm -f /tmp/multi_sw_hs_test.*
 
 killall /opt/nox/bin/nox_core
+kill `ps ax | grep /usr/local/bin/multi_sw_hs_test | awk '{print $1}'` > /dev/null 2>&1
 
 rm -f /root/mac_stat /root/thread_stat
 
+echo 0 0 > /root/mac_stat
 cd /opt/nox/bin/; /opt/nox/bin/nox_core --libdir=/opt/nox/lib -i ptcp:6633 -v -v --threads=10 switchqos > /tmp/nox_core.log 2>&1 &
 
-echo 0 0 > /root/mac_stat
-sleep 5
+while ! tail -1 /root/mac_stat
+do
+	sleep 1
+done
 
 mac=$MAC
 while [ `tail -1 /root/mac_stat | awk '{print $2}'` -le $MACS_MAX ]
@@ -29,6 +33,6 @@ do
 	do
 		mac=$(($mac+$MACS))
 		/usr/local/bin/multi_sw_hs_test $SW $IF $IP $mac $MACS $i &
-		sleep 5
+		sleep 1
 	done
 done
