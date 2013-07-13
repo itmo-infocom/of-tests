@@ -1,0 +1,17 @@
+# description: multi switches & hosts OpenFlow test.
+# This is the tcp version.
+service multi_sw_hs
+{
+        disable         = no
+        socket_type     = stream
+        type            = UNLISTED
+        flags           = NORETRY
+        protocol        = tcp
+        port            = 12345
+        user            = root
+        wait            = no
+        instances       = 1
+        server          = /usr/local/bin/multi_sw_hs
+#       server          = /usr/local/bin/multi_sw_hs.py
+#       server_args     =  3 eth1 10.10.20.129 0 2
+}

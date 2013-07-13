@@ -1,0 +1,30 @@
+#!/bin/sh
+
+SW=$1
+IF=$2
+IP=$3
+MAC=$4
+MACS=$5
+num=$(($6-1))
+
+LOCK=/tmp/multi_sw_hs_test.$num.lock
+LOG=/tmp/multi_sw_hs_test.$num.log
+
+export SW num
+
+if [ -f $LOCK ]
+then
+	exit
+else
+	touch $LOCK
+	
+	IP_BEG=`echo $IP | awk -F '.' '{print $1"."$2"."$3"."$4+ENVIRON["SW"]*ENVIRON["num"]}'`
+	ARGS="$SW $IF $IP_BEG $(($MAC+$SW*$num)) $MACS"
+	echo $ARGS >> $LOG
+	#nc 192.168.122.$((30 + $num)) 12345 >> $LOG <<END
+	echo nc 10.10.20.$((111 + $num)) 12345 >> $LOG 
+	nc 10.10.20.$((111 + $num)) 12345 >> $LOG <<END
+$ARGS
+END
+	rm -f $LOCK
+fi
