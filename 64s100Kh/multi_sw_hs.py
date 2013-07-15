@@ -102,6 +102,7 @@ def test(net, mac, macs):
             MAC.dialect = mac_unix
             h.setMAC(i, str(MAC))
             print h.IP() + " -- " + h.MAC()  + " -- ",
+            os.system("/usr/local/bin/run_new_nox")
             ret = h.cmd("ping -q -c1 10.10.20.6")
             if ret.find('1 packets transmitted, 1 received, 0% packet loss') != -1:
                 print "OK"

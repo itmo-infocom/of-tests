@@ -1,0 +1,5 @@
+#!/bin/sh
+
+pidof /opt/nox/bin/nox_core >/dev/null 2>&1 && exit
+
+cd /opt/nox/bin/; /opt/nox/bin/nox_core --libdir=/opt/nox/lib -v -v -i ptcp:6633 --threads=10 switchqos >> /tmp/c0.log 2>&1 &

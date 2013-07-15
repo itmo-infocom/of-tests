@@ -5,7 +5,7 @@
 MACS_MAX=100000
 PROC_MAX=10
 
-SW=11
+SW=7
 IF=eth1
 IP=10.10.20.129
 MAC=0
@@ -13,7 +13,7 @@ MACS=100
 
 rm -f /tmp/multi_sw_hs_test.*
 
-killall /opt/nox/bin/nox_core
+killall /opt/nox/bin/nox_core nc
 kill `ps ax | grep /usr/local/bin/multi_sw_hs_test | awk '{print $1}'` > /dev/null 2>&1
 
 rm -f /root/mac_stat /root/thread_stat
