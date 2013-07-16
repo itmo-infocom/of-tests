@@ -1,6 +1,6 @@
 node:
 	install multi_sw_hs.xinetd /etc/xinetd.d/multi_sw_hs
-	install multi_sw_hs multi_sw_hs.py /usr/local/bin/
+	install multi_sw_hs multi_sw_hs.py run_new_nox /usr/local/bin/
 	service xinetd stop; service xinetd start
 
 main:
